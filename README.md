@@ -14,7 +14,7 @@
 
    安装 [mentohust_0.3.4-1_amd64.deb](https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/mentohust/mentohust_0.3.4-1_amd64.deb) 包。
 
-   Mentohust 使用 `notify-osd` `libnotify-dev` 提供气泡提示。关于通知的文档：https://wiki.archlinux.org/index.php/Desktop_notifications
+   Mentohust 使用 `notify-osd` `libnotify-dev` 提供气泡提示（Unity 桌面默认通知方式，Cinnamon 桌面需要手动安装包）。关于通知的文档：https://wiki.archlinux.org/index.php/Desktop_notifications
 
    ```bash
    # 修复提示 “！！打开libnotify失败，请检查是否已安装该库文件。”
@@ -97,6 +97,36 @@ sudo vim/etc/profile.d/infinality-settings.sh
 
 启用 `Hinting full`。
 
+### 美化
+
+1. 壁纸
+
+   安装所有 Linux Mint 历史版本自带壁纸：
+
+   ```bash
+   sudo apt-get install mint-backgrounds-*
+   ```
+
+2. 图标
+
+   经典 Numix-Circle 图标适配全，更新快：
+
+   ```bash
+   sudo add-apt-repository ppa:numix/ppa
+   sudo apt-get update
+   sudo apt-get install numix-icon-theme-circle
+   ```
+
+3. 主题
+
+   添加 Numix PPA 后，安装 gtk 主题：
+
+   ```bash
+   sudo apt-get install numix-gtk-theme
+   ```
+
+   对于 Cinnamon 桌面而言，改变 Panel 主题可下载 `Numix-Cinnamon-2` 主题设置使用。
+
 ## 应用软件
 
 ### 浏览器
@@ -153,6 +183,23 @@ sudo apt-get install typora
 
    ```bash
    sudo apt-get install shutter
+   ```
+
+4. 护眼 `Redshift`:
+
+   ```bash
+   sudo apt-get install redshift
+   ```
+
+   初次启动可能提示缺少 `Geoclue` 组件，安装后可以使用自动网络定位。
+
+   手动配置文件 `~/.config/redshift.conf`:
+
+   ```bash
+   temp-day=6500        # 适应可设为 5500
+   temp-night=5500      # 适应可设为 4100
+
+   gamma=0.8            # 纠正笔记本大白屏幕的好方式
    ```
 
 ### 开发环境
@@ -221,3 +268,12 @@ sudo apt-get install typora
    sudo -v && wget -nv -O- https://raw.githubusercontent.com/kovidgoyal/calibre/master/setup/linux-installer.py | sudo python -c "import sys; main=lambda:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main()"
    ```
 
+### 下载工具
+
+1. [Xware](https://github.com/yinheli/docker-thunder-xware)
+
+   会用 Docker 的一看就懂。
+
+2. [You-Get](https://github.com/soimort/you-get)
+
+   视频下载神器，同样地，下载 Youtube 视频用 Proxychains 代理。
