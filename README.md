@@ -1,4 +1,4 @@
-# linuxmint-guide
+# Linux Mint 配置向导及应用
 ## 基本配置
 
 ### 联网
@@ -159,4 +159,65 @@ sudo apt-get install typora
 
 1. [NVM](https://github.com/creationix/nvm)
 
-   ​
+2. [Docker](https://docs.docker.com/engine/installation/linux/ubuntulinux/)
+
+3. Umake
+
+   Umake 是 Ubuntu 官方的一款用来安装开发环境及开发工具的工具，同样在 Linux Mint 下可用。预装已有 Umake 工具，但支持较少，通过 ppa 来升级。
+
+   ```bash
+    $ sudo add-apt-repository ppa:ubuntu-desktop/ubuntu-make
+    $ sudo apt-get update
+    $ sudo apt-get upgrade
+   ```
+
+### 同步工具
+
+1. [坚果云](https://www.jianguoyun.com/)
+
+2. [Dropbox](https://www.dropbox.com/)
+
+   安装过程中需要联网下载，故需使用 `Proxychains` 来启动安装。
+
+   Dropbox 默认目录在 `~/Dropbox` 进行同步，备份目录只需要创建一个软链接到此目录即可。
+
+### 代理工具
+
+1. Shadowsocks
+
+   推荐使用 [Shadowsocks-qt5](https://github.com/shadowsocks/shadowsocks-qt5) 来设置。
+
+   ```bash
+   sudo add-apt-repository ppa:hzwhuang/ss-qt5
+   sudo apt-get update
+   sudo apt-get install shadowsocks-qt5
+   ```
+
+2. Proxychains
+
+   代理终端命令中的网络请求。在源中安装：
+
+   ```bash
+   sudo apt-get install proxychains
+   ```
+
+   然后配置文件 `/etc/proxychains.conf`:
+
+3. [Lantern](https://getlantern.org/)
+
+### 文档阅读
+
+1. [Zeal](https://zealdocs.org/)
+
+   ```bash
+   $ sudo add-apt-repository ppa:zeal-developers/ppa
+   $ sudo apt-get update
+   $ sudo apt-get install zeal
+   ```
+
+2. Calibre
+
+   ```bash
+   sudo -v && wget -nv -O- https://raw.githubusercontent.com/kovidgoyal/calibre/master/setup/linux-installer.py | sudo python -c "import sys; main=lambda:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main()"
+   ```
+
