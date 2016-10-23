@@ -127,6 +127,21 @@ sudo vim/etc/profile.d/infinality-settings.sh
 
    对于 Cinnamon 桌面而言，改变 Panel 主题可下载 `Numix-Cinnamon-2` 主题设置使用。
 
+4. 登录窗口
+
+   同样选择 Numix 主题来统一风格，自定义背景修改 `/usr/share/mdm/html-themes` 路径下主题文件。
+
+### 输入法
+
+Fcitx 搭配 Cinnamon 会产生一个僵尸进程，搜狗输入法容易导致概率性 CPU 占用 100%。所以使用[小小输入法](http://yongim.ys168.com/)。
+
+解压到主目录 `~/.yong`:
+
+```bash
+sudo chmod +x ./yong-tool.sh
+sudo ./yong-tool.sh --install
+```
+
 ## 应用软件
 
 ### 浏览器
