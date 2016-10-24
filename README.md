@@ -92,7 +92,7 @@ sudo bash /etc/fonts/infinality/infctl.sh setstyle
 
 ```bash
 # 修改 USE_STYLE 为 UBUNTU
-sudo vim/etc/profile.d/infinality-settings.sh
+sudo vim /etc/profile.d/infinality-settings.sh
 ```
 
 启用 `Hinting full`。
