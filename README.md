@@ -200,6 +200,8 @@ sudo apt-get install typora
    sudo apt-get install shutter
    ```
 
+   设置快捷键命令 `shutter -s`，实现矩形选区截图。
+
 4. 护眼 `Redshift`:
 
    ```bash
