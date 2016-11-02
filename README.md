@@ -265,9 +265,47 @@ sudo apt-get install typora
    sudo apt-get install proxychains
    ```
 
-   然后配置文件 `/etc/proxychains.conf`:
+   然后配置文件 `/etc/proxychains.conf`。
 
 3. [Lantern](https://getlantern.org/)
+
+4. polipo
+
+   polipo 是一个轻量级的缓存web代理程序，将 socks 代理转换为 http 代理。
+
+   ```bash
+   sudo apt-get install polipo
+   ```
+
+   配置文件 `/etc/polipo/config`：
+
+   ```bash
+   # This file only needs to list configuration variables that deviate
+   # from the default values.  See /usr/share/doc/polipo/examples/config.sample
+   # and "polipo -v" for variables you can tweak and further information.
+
+   logSyslog = true
+   logFile = /var/log/polipo/polipo.log
+
+   proxyAddress = "0.0.0.0"
+
+   socksParentProxy = "127.0.0.1:1080"
+   socksProxyType = socks5
+
+   chunkHighMark = 50331648
+   objectHighMark = 16384
+
+   serverMaxSlots = 64
+   serverSlots = 16
+   serverSlots1 = 32
+   ```
+
+   默认运行在 8123 端口，启动服务并为当前会话配置代理：
+
+   ```bash
+   sudo service polipo start
+   export http_proxy="http://127.0.0.1:8123/"
+   ```
 
 ### 文档阅读
 
