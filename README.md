@@ -142,6 +142,12 @@ sudo chmod +x ./yong-tool.sh
 sudo ./yong-tool.sh --install
 ```
 
+#### 输入法词库
+
+小小输入法内置词库少，可使用工具将其他词库转换后导入：https://github.com/studyzy/imewlconverter
+
+导入说明：https://github.com/studyzy/imewlconverter/wiki/Xiaoxiao
+
 ## 应用软件
 
 ### 浏览器
