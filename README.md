@@ -1,5 +1,6 @@
 # Linux Mint 配置向导及应用
 
+
 目录
 =================
 
@@ -133,23 +134,43 @@ sudo vim /etc/profile.d/infinality-settings.sh
 
 2. 图标
 
-   经典 Numix-Circle 图标适配全，更新快：
+   1. 经典 Numix-Circle 图标适配全，更新快：
 
-   ```bash
-   sudo add-apt-repository ppa:numix/ppa
-   sudo apt-get update
-   sudo apt-get install numix-icon-theme-circle
-   ```
+      ```bash
+      sudo add-apt-repository ppa:numix/ppa
+      sudo apt-get update
+      sudo apt-get install numix-icon-theme-circle
+      ```
+
+   2. 扁平化 Paper 图标，适合扁平化主题：
+
+      ```shell
+      sudo add-apt-repository ppa:snwh/pulp
+      # update repository info
+      sudo apt-get update
+      # install icon theme
+      sudo apt-get install paper-icon-theme
+      # install gtk theme
+      sudo apt-get install paper-gtk-theme
+      # install cursor theme
+      sudo apt-get install paper-cursor-theme
+      ```
 
 3. 主题
 
-   添加 Numix PPA 后，安装 gtk 主题：
+   1. 添加 Numix PPA 后，安装 gtk 主题：
 
-   ```bash
-   sudo apt-get install numix-gtk-theme
-   ```
+      ```bash
+      sudo apt-get install numix-gtk-theme
+      ```
 
-   对于 Cinnamon 桌面而言，改变 Panel 主题可下载 `Numix-Cinnamon-2` 主题设置使用。
+      对于 Cinnamon 桌面而言，改变 Panel 主题可下载 `Numix-Cinnamon-2` 主题设置使用。
+
+   2. 添加 Adapta PPA 后，安装主题：
+
+      ```shell
+      sudo apt-get install adapta-gtk-theme
+      ```
 
 4. 登录窗口
 
