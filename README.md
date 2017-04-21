@@ -86,6 +86,10 @@ alias qrj="mentohust -k"          # 退出联网
 # alias qxl="docker stop xware"   停止讯雷远程下载容器
 ```
 
+### 内核回退
+
+
+
 ### 字体
 
 下载符号字体解决 wps 符号字体缺失：
@@ -193,6 +197,32 @@ sudo ./yong-tool.sh --install
 
 导入说明：https://github.com/studyzy/imewlconverter/wiki/Xiaoxiao
 
+### Java 开发环境配置
+
+默认 JDK 安装：
+
+```shell
+sudo apt-get update
+sudo apt-get install default-jre
+```
+
+Oracle JDK 安装：
+
+```shell
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java6-installer # JDK 6
+sudo apt-get install oracle-java7-installer # JDK 7
+sudo apt-get install oracle-java8-installer # JDK 8
+```
+
+版本之间切换：
+
+```shell
+update-alternatives --config java
+update-alternatives --config javac
+```
+
 ## 应用软件
 
 ### 浏览器
@@ -270,6 +300,16 @@ sudo apt-get install typora
    gamma=0.8            # 纠正笔记本大白屏幕的好方式
    ```
 
+5. 录屏 GIF 工具: [peek](https://github.com/phw/peek)
+
+   ```shell
+   sudo add-apt-repository ppa:peek-developers/stable
+   sudo apt update
+   sudo apt install peek
+   ```
+
+
+
 ### 开发环境
 
 1. [NVM](https://github.com/creationix/nvm)
@@ -284,6 +324,24 @@ sudo apt-get install typora
     $ sudo add-apt-repository ppa:ubuntu-desktop/ubuntu-make
     $ sudo apt-get update
     $ sudo apt-get upgrade
+   ```
+
+4. [DBeaver](http://dbeaver.jkiss.org/): 跨平台数据库管理工具。
+
+5. [DiffMerge](https://sourcegear.com/diffmerge/): 跨平台 GUI 代码比较工具。
+
+6. [Wireshark](https://www.wireshark.org/): 跨平台抓包工具
+
+   ```shell
+   sudo add-apt-repository ppa:wireshark-dev/stable
+   sudo apt-get update
+   sudo apt-get install wireshark
+   ```
+
+   将本地用户加入 `wireshark` 用户组：
+
+   ```shell
+   sudo usermod -a -G wireshark rainy
    ```
 
 ### 同步工具
@@ -307,6 +365,8 @@ sudo apt-get install typora
    sudo apt-get update
    sudo apt-get install shadowsocks-qt5
    ```
+
+   在 Shadowsocks 启动后，会运行一个 `8123` 端口的 http 本地代理，不支持 socks 代理的可以使用此 http 代理方式。
 
 2. Proxychains
 
