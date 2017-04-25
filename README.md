@@ -345,6 +345,24 @@ sudo apt-get install typora
    sudo usermod -a -G wireshark rainy
    ```
 
+7. [Code::Blocks](http://www.codeblocks.org/)
+
+   Daily Builds:
+
+   ```shell
+   sudo add-apt-repository ppa:damien-moore/codeblocks
+   sudo apt-get update
+   sudo apt-get install codeblocks
+   ```
+
+   Release Builds:
+
+   ```shell
+   sudo add-apt-repository ppa:damien-moore/codeblocks-stable
+   sudo apt-get update
+   sudo apt-get install codeblocks codeblocks-contrib
+   ```
+
 ### 同步工具
 
 1. [坚果云](https://www.jianguoyun.com/)
@@ -444,3 +462,7 @@ sudo apt-get install typora
 2. [You-Get](https://github.com/soimort/you-get)
 
    视频下载神器，同样地，下载 Youtube 视频用 Proxychains 代理。
+
+### 系统管理
+
+1. Gparted: 图形化磁盘分区管理工具
