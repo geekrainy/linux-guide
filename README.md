@@ -8,13 +8,15 @@
      * [基本配置](#基本配置)
          * [联网](#联网)
          * [终端](#终端)
+         * [内核回退](#内核回退)
          * [字体](#字体)
          * [美化](#美化)
          * [输入法](#输入法)
             * [输入法词库](#输入法词库)
-         * [Java 开发环境配置](#Java-开发环境配置)
+         * [Java 开发环境配置](#Java 开发环境配置)
      * [应用软件](#应用软件)
          * [浏览器](#浏览器)
+         * [Chrome Apps](#Chrome Apps)
          * [编辑器](#编辑器)
          * [Markdown 写作](#markdown-写作)
          * [效率](#效率)
@@ -22,8 +24,13 @@
          * [同步工具](#同步工具)
          * [代理工具](#代理工具)
          * [文档阅读](#文档阅读)
+         * [办公教育](#办公教育)
          * [下载工具](#下载工具)
-
+         * [系统管理](#系统管理)
+     * [Windows 兼容](#Windows 兼容)
+         * [CrossOver](#CrossOver)
+         * [Microsoft Office](#Microsoft Office)
+         * [虚拟机方案及优化](#虚拟机方案及优化)
 
 ## 基本配置
 
@@ -242,6 +249,15 @@ update-alternatives --config javac
    umake web firefox-dev 
    ```
 
+### Chrome Apps
+
+1. Google Keep
+2. 豆瓣电台
+3. Enjoy Music Player
+4. Polarr
+5. All-in-One
+6. Postman
+
 ### 编辑器
 
 Visual Studio Code - https://code.visualstudio.com/
@@ -453,6 +469,19 @@ sudo apt-get install typora
    sudo -v && wget -nv -O- https://raw.githubusercontent.com/kovidgoyal/calibre/master/setup/linux-installer.py | sudo python -c "import sys; main=lambda:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main()"
    ```
 
+### 办公教育
+1. [QtiPlot](http://www.qtiplot.com/)
+
+   可以替代 OriginLab.
+
+   ```shell
+   sudo apt-get install qtiplot
+   ```
+
+2. [WPS Office](http://linux.wps.cn/)
+
+   许久未见更新，半死不活的样子。Linux 版本无法编辑公式，无法正确显示公式。只适合阅读不适合编辑。
+
 ### 下载工具
 
 1. [Xware](https://github.com/yinheli/docker-thunder-xware)
@@ -465,4 +494,26 @@ sudo apt-get install typora
 
 ### 系统管理
 
-1. Gparted: 图形化磁盘分区管理工具
+1. Gparted
+
+   图形化磁盘分区管理工具。
+
+   ```shell
+   sudo apt-get install gparted
+   ```
+
+## Windows 兼容
+
+Linux 平台下的应用虽然数量多，但质量也参差不齐。许多应用需要进行虚拟机或 wine 等方式来曲线救国。
+
+1. [CrossOver](https://www.codeweavers.com)
+
+   作为 wine 项目的商业支持版本，可以很方便安装一系列 Windows 平台软件。对于 Deepin Linux 用户已经预装在系统中，包含批量授权。其他发行版用户需要购买。
+
+2. Microsoft Office
+
+   鉴于 WPS for Linux 功能有限且字体各方面显示不尽人意，借助 CrossOver 可以完美安装 Microsoft Office 系列。但为了消除字体等造成的差异，还是选择在虚拟机下使用 Office。
+
+3. 虚拟机方案及优化
+
+   （待编辑）
