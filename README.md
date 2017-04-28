@@ -24,9 +24,6 @@
          * [下载工具](#下载工具)
          * [系统管理](#系统管理)
      * [Windows 兼容](#Windows-兼容)
-         * [CrossOver](#CrossOver)
-         * [Microsoft Office](#Microsoft-Office)
-         * [虚拟机方案及优化](#虚拟机方案及优化)
 
 ## 基本配置
 
