@@ -1,6 +1,8 @@
-# Linux Mint 配置及应用
+# Linux 配置及应用
 
-* [Linux Mint 配置及应用](#linux-mint-配置及应用)
+> 个人日常使用发行版为 [Linux Mint](https://www.linuxmint.com/), Debian 系发行版大部分可套用或稍加改动使用。RedHat 系发行版可能随之后的使用情况而修订增加相关内容。
+
+* [Linux 配置及应用](#linux-mint-配置及应用)
      * [基本配置](#基本配置)
          * [联网](#联网)
          * [终端](#终端)
