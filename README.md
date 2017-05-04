@@ -26,7 +26,7 @@
          * [下载工具](#下载工具)
          * [系统管理](#系统管理)
      * [Windows 兼容](#windows-兼容)
-     * [Tips](#Tips)
+     * [Tips](#tips)
          * [Linux Mint 安装 git-lfs](#linux-mint-安装-git-lfs)
 
 ## 基本配置
