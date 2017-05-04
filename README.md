@@ -26,6 +26,8 @@
          * [下载工具](#下载工具)
          * [系统管理](#系统管理)
      * [Windows 兼容](#windows-兼容)
+     * [Tips](#Tips)
+         * [Linux Mint 安装 git-lfs](#linux-mint-安装-git-lfs)
 
 ## 基本配置
 
@@ -512,3 +514,23 @@ Linux 平台下的应用虽然数量多，但质量也参差不齐。许多应�
 3. 虚拟机方案及优化
 
    （待编辑）
+
+## Tips
+
+### Linux Mint 安装 git-lfs
+
+git-lfs 提供了一个[安装文档](https://github.com/git-lfs/git-lfs/blob/master/INSTALLING.md)，但是在使用 Linux Mint 进行安装时需要按照文档中的说明进行变通。原脚本的自动检测功能并没有发挥作用，需要手动设置为兼容的上游发行版源，参见 [#1074](https://github.com/git-lfs/git-lfs/issues/1074).
+
+例如，使用 Linux Mint 18.x 进行安装时，需要设置为 ubuntu 16.04 的源。
+
+```shell
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | os=ubuntu dist=xenial sudo -E bash
+```
+
+然后就可以正常安装：
+
+```shell
+sudo apt-get update
+sudo apt-get install git-lfs
+```
+
