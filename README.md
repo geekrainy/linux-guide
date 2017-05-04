@@ -534,3 +534,13 @@ sudo apt-get update
 sudo apt-get install git-lfs
 ```
 
+> 由于 github 的 lfs 文件存储在 Amazon S3 服务器，所以在传送大文件时可能因为网络原因造成失败。所以可以通过配置 `hosts` 文件来使其走香港节点，来提高速度。
+>
+> 在 `hosts` 文件中添加：
+>
+> ```shell
+> 219.76.4.4 github-cloud.s3.amazonaws.com
+> ```
+>
+> 而通过配置代理方式来加速暂未成功，待更新。
+
