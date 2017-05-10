@@ -6,6 +6,7 @@
      * [基本配置](#基本配置)
          * [联网](#联网)
          * [终端](#终端)
+            * [bd](#bd)
          * [内核回退](#内核回退)
          * [字体](#字体)
          * [美化](#美化)
@@ -90,6 +91,18 @@ alias qrj="mentohust -k"          # 退出联网
 # alias xl="docker start xware"   启动讯雷下载容器
 # alias qxl="docker stop xware"   停止讯雷远程下载容器
 ```
+
+#### [bd](https://github.com/vigneshwaranr/bd)
+
+`bd` 可以方便地在当前路径的父级别目录切换，安装可以点击项目链接查看文档中的安装说明。
+
+> 默认安装不会在非 bash 终端中配置 `bd` 运行的别名，需要手动设置。
+>
+> 例如使用 `zsh` 终端，需要在 `.zshrc` 中增加：
+>
+> ```shell
+> alias bd=". bd -si"
+> ```
 
 ### 内核回退
 
