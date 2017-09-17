@@ -1,6 +1,10 @@
 # Linux 配置及应用
 
 > 个人日常使用发行版为 [Linux Mint](https://www.linuxmint.com/), Debian 系发行版大部分可套用或稍加改动使用。RedHat 系发行版可能随之后的使用情况而修订增加相关内容。
+>
+> 部分内容为使用 centos 或 oracle linux 中的内容，非 RedHat 系发行版需要搜索以确认相同配置文件的不同路径及其它差异。
+>
+> *Linux 发行版的区别大同小异，学习 Linux 重在学习一种通用的解决方案或思路，不必过分纠结使用何种发行版，迷失在发行版之间差异的细枝末节中！*
 
 * [Linux 配置及应用](#linux-mint-配置及应用)
      * [基本配置](#基本配置)
@@ -29,6 +33,26 @@
      * [Windows 兼容](#windows-兼容)
      * [Tips](#tips)
          * [Linux Mint 安装 git-lfs](#linux-mint-安装-git-lfs)
+         * [普通用户无法使用-sudo](#普通用户无法使用-sudo)
+         * [救援模式更改 root 密码](#救援模式更改-root-密码)
+         * [配置密钥登陆](#配置密钥登陆)
+            * [开启免密登陆](#开启免密登陆)
+            * [配置 Linux 服务器仅使用密钥认证](#配置-Linux-服务器仅使用密钥认证)
+         * [计划任务](#计划任务)
+         * [使用本地镜像源](#使用本地镜像源)
+         * [LVM 磁盘挂载、扩容、分区](#LVM-磁盘挂载、扩容、分区)
+            * [创建和管理 LVM](#创建和管理-LVM)
+            * [错误执行 lvreduce 后的恢复](#错误执行-lvreduce-后的恢复)
+         * [建立 Swap 分区](#建立-Swap-分区)
+            * [创建用于交换分区的文件](#创建用于交换分区的文件)
+            * [设置交换分区文件](#设置交换分区文件)
+            * [立即启用交换分区文件](#立即启用交换分区文件)
+            * [开机时启用 swap 分区](#开机时启用-swap-分区)
+         * [更改主机名](#更改主机名)
+            * [方法一](#方法一)
+            * [方法二](#方法二)
+
+
 
 ## 基本配置
 
@@ -557,3 +581,342 @@ sudo apt-get install git-lfs
 >
 > 而通过配置代理方式来加速暂未成功，待更新。
 
+### 普通用户无法使用 sudo
+
+> xxx is not in the sudoers file. This incident will bereported (xxx 为用户名)
+
+在超级用户模式下执行
+```
+chmod u+w /etc/sudoers
+```
+编辑该文件，找到
+```
+root ALL=(ALL) ALL
+xxx  ALL=(ALL) ALL # 追加此行，xxx 为用户名
+```
+为了安全，修改结束后将用户写权限禁用
+```
+chmod u-w /etc/sudoers
+```
+### 救援模式更改 root 密码
+
+**以 centos 为例**
+
+添加光盘镜像：
+选择 `rescue install system`，进入 bash 后原系统将被挂载再 `/mnt/sysimage/` 下，之后执行
+
+```shell
+chroot /mnt/sysimage
+```
+若成功则 shell 提示符变为 `sh-4.1#`，之后即可对原系统进行恢复救援操作。
+
+### 配置密钥登陆
+
+在 xshell 中，点击 “工具 -> 新建用户密钥生成向导 -> ..."
+生成之后，将公钥传输到 `.ssh` 下，执行
+
+```shell
+cat *.pub >> authorized_keys
+```
+此时生成的 `authorized_keys` 权限可能有问题，需要将权限改为 `600`.
+或者在本机将公钥传输
+```shell
+ssh-copy-id -i ~/.ssh/id_rsa.pub root@xxx.xxx.xxx.xxx
+```
+本机为 windows 系统，用 git bash 传输，注意公钥的保存路径。
+执行权限更改操作以防安全
+```shell
+chmod 700 .ssh
+chmod 600 .ssh/authorized_keys
+```
+#### 开启免密登陆
+编辑 `sshd_config` 文件
+```shell
+vim /etc/ssh/sshd_config
+
+RSAAuthentication yes
+PubkeyAuthentication yes
+AuthorsizedKeysFile .ssh/authorized_keys
+```
+#### 配置 Linux 服务器仅使用密钥认证
+编辑 `sshd_config` 文件
+```shell
+vim /etc/ssh/sshd_config
+
+# 禁用密码认证
+PasswordAuthentication no
+# 启用密钥认证
+RSAAuthentication yes
+PubkeyAuthentication yes
+# 指定公钥数据库文件
+AuthorsizedKeysFile .ssh/authorized_keys
+```
+脚本执行上述修改
+```shell
+sed -i "s/^PasswordAuthentication.*/PasswordAuthentication no/g" /etc/ssh/sshd_config
+sed -i "s/^#RSAAuthentication.*/RSAAuthentication yes/g" /etc/ssh/sshd_config
+sed -i "s/^#PubkeyAuthentication.*/PubkeyAuthentication yes/g" /etc/ssh/sshd_config
+sed -i "s/^#AuthorizedKeysFile.*/AuthorizedKeysFile .ssh\/authorized_keys/g" /etc/ssh/sshd_config
+```
+重启 SSH 服务器启用，**保留一个会话以防不测**
+```shell
+# RPM 系
+service sshd restart
+# DEB 系
+service ssh restart
+# 老 Debian
+/etc/init.d/ssh restart
+```
+可以在每个用户的公钥后加入用户标识进行管理
+```shell
+echo 'ssh-rsa XXXX' >> /root/.ssh/authorized_keys
+```
+### 计划任务
+
+1.  编辑 crontab 服务文件
+
+    ```shell
+    crontab -e
+    ```
+
+    ​
+
+2.  查看该用户下的 crontab 服务是否创建成功，用 crontab -l 命令
+
+3.  启动 crontab 服务
+    执行
+    ```shell
+    service crond start
+    service crond restart # 重启服务
+    ```
+    查看服务是否已运行：
+    ```shell
+    ps -ax | grep cron
+    ```
+
+4.  crontab 命令
+    ```shell
+    crontab -u # 设定某个用户的 cron 服务
+    crontab -l # 列出某个用户 cron 服务的详细内容
+    crontab -r # 删除某个用户的 cron 服务
+    crontab -e # 编辑某个用户的 cron 服务
+    ```
+    在编辑时，编辑内容要符合格式：
+    ```
+    */1 * * * * ls >> /tmp/ls.txt
+    ```
+    语法说明
+    ```
+    分    小时    日    月    星期    命令
+    0-59  0-23   1-31  1-12  0-6     command
+    ```
+    `*` 代表取值范围内的数字
+    `/` 代表每
+    `-` 代表从某个数字到某个数字
+    `,` 分开几个离散的数字
+
+### 使用本地镜像源
+
+对于 Oracle Linux
+
+```shell
+cd /etc/yum.repos.d/
+mv public-yum-ol6.repo public-yum-ol6.repo.bak # 绕过网络镜像
+mv packagekit-media.repo packagekit-media.repo.bak # 备份本地镜像源
+```
+将镜像挂载
+```shell
+mount /dev/cdrom /mnt/
+```
+新建本地镜像源
+```shell
+vim /etc/yum.repos.d/local.repo
+```
+```
+[local-media]
+name=local
+baseurl=file:///mnt/
+gpgcheck=0 # 默认不检查 gpg
+enabled=1
+```
+### LVM 磁盘挂载、扩容、分区
+
+LVM是在磁盘分区和文件系统之间添加的一个逻辑层，来为文件系统屏蔽下层磁盘分区布局，提供一个抽象的盘卷，在盘卷上建立文件系统。首先我们讨论以下几个LVM术语。
+
+PV: 是物理的磁盘分区，一个硬盘分区组成一个 pv。
+VG: LVM 中的物理磁盘分区，必须加入 VG，VG 理解为一个大仓库。
+LV: 从 VG 中划分的逻辑分区
+
+下图为 LVM 逻辑卷管理示意图，来自 [维基百科](https://en.wikipedia.org/wiki/Logical_Volume_Manager_(Linux)#/media/File:Lvm.svg)
+
+![LVM 逻辑卷管理](images/Lvm.svg "LVM 逻辑卷管理 ")
+
+#### 创建和管理 LVM
+
+
+1.  挂载新硬盘
+    新挂载硬盘的设备名为 `/dev/sdb`
+    管理开机挂载的文件在 `/etc/fstab`
+2.  创建分区
+    LVM 的分区类型为 8e。
+    使用 fdisk 创建分区，根据设备文件的绝对路径(/dev/sda)进入分区管理。
+    ```shell
+    fdisk /dev/sdb
+    ```
+    - 输入 n 创建新分区
+    - 输入 p 创建基本分区（p 是基本分区，e 是扩展分区）
+    - 选择分区编号，1~4，选择没使用的，新磁盘则使用 1
+    - 选择分区起始点，默认
+    - 选择分区终点，默认
+    - 回车，分区完成
+    - 输入 t，更改分区编号
+    - 输入 L，查看所有编号，选择 8e
+    - 保存退出，输入 w，写入磁盘
+
+    初始化分区 `sdb` 为物理卷 pv
+    ```shell
+    pvcreate /dev/sdb1
+    Physical volume "/dev/sdb1" successfully created
+    ```
+    显示物理卷信息
+    ```shell
+    pvdisplay
+    ...
+    "/dev/sdb1" is a new physical volume of "10.00 GiB"
+    --- NEW Physical volume ---
+    PV Name               /dev/sdb1
+    VG Name               
+    PV Size               10.00 GiB
+    Allocatable           NO
+    PE Size               0   
+    Total PE              0
+    Free PE               0
+    Allocated PE          0
+    PV UUID               1KxYdf-RKzH-ZC6u-j58D-B7d3-Bf3J-snknHS
+    ```
+    创建逻辑卷组 vg，将 `/dev/sdb` 加入到这个卷组里。
+    ```shell
+    vgcreate vg_other /dev/sdb
+    ```
+3.  对已有的卷组进行扩容
+    ```shell
+    vgextend vg_hand /dev/sdb1
+    ```
+    查看 vg 的容量已经增加
+    ```shell
+    vgdisplay
+    ```
+    查看已经存在的 lv 信息，以 LogVol01 为例
+    ```
+    lvextend -L 10G /dev/vg_hand/LogVol01 # 扩展 LV
+    ```
+    或者直接将剩余空间全部扩展
+    ```
+    lvextend -l +100%FREE /dev/vg_hand/logVol01 # 扩展剩余所有空间到 logVol01
+    ```
+    执行重设
+    ```shell
+    resize2fs /dev/vg_hand/LogVol01
+    ```
+4.  创建lv
+    ```shell
+    lvcreate -L 10G -n lv_new vg_hand
+    ```
+    然后进行格式化，查看系统的文件类型
+    ```shell
+    df -Th
+    ```
+    格式化 lv
+    ```shell
+    mkfs.ext4 /dev/vg_hand/new_lv
+    ```
+5.  lv 删除后，再次扫描或扩容，报错 LV missing，原因是需要刷新 VG，执行如下命令。
+    ```
+    vgchange -a y /dev/vg_hand
+    ```
+6.  从 vg 移除并删除 pv
+    ```shell
+    vgreduce vg_hand /dev/sda4
+    pvremove /dev/sda4
+    ```
+    删除该硬盘的 lvm 分区
+    ```shell
+    fdisk /dev/sda4
+    ```
+    - p 显示分区情况
+    - d 删除分区
+
+#### 错误执行 lvreduce 后的恢复
+执行 `lvreduce` 操作时，需要按顺序执行。
+- 若有挂载目录，需要先卸载目录 `umount /dir`
+- 文件系统检查 `e2fsck -f /dev/mapper/vg_hand-lv_dir`
+- 文件系统大小变更 `resize2fs /dev/mapper/vg_hand-lv_dir 10G`
+- lv 缩减 `lvresize -L 10G /dev/mapper/vg_hand-lv_dir`
+- 挂载所有 `/etc/fstab` 中的记录。
+
+若在执行 `lvreduce` 或 `lvresize` 之前没有执行文件系统大小变更的操作，则可能开机报错。
+```
+wrong fs type, bad option, bad superblock on /dev/mapper/vg_hand-lv_root
+```
+无法进入系统，需要进行恢复，恢复操作。
+挂载 iso 镜像，进入第三项。
+
+![进入恢复系统](images/lvm_restore1.png "进入恢复系统")
+
+之后若检测不到本机系统，则只进入 Shell 环境进行恢复操作。
+
+![点击继续](images/lvm_restore2.png "点击继续")
+
+若可以进入则系统被挂载在 `/mnt/sysimage` 下
+
+![挂载系统](images/lvm_restore3.png "挂载系统")
+
+```shell
+lvextend -L 5G /dev/vg_hand/lv_root # 扩展到原来的大小即可恢复
+```
+
+### 建立 Swap 分区
+
+阿里云和腾讯云默认不开启 swap，建立 swap 分区执行以下步骤。
+
+#### 创建用于交换分区的文件
+```shell
+dd if=/dev/zero of=/mnt/swap bs=block_size count=number_of_block
+```
+注：block_size、number_of_block 大小可以自定义，比如bs=1M count=1024 代表设置1G大小
+
+#### 设置交换分区文件
+```shell
+mkswap /mnt/swap
+```
+
+#### 立即启用交换分区文件
+```shell
+swapon /mnt/swap
+```
+如果在/etc/rc.local中有swapoff -a 需要修改为swapon -a
+
+#### 开机时启用 swap 分区
+修改文件 /etc/fstab 中的 swap 行。
+添加 `/mnt/swap swap swap default 0 0`
+
+设置后执行 `free -m` 命令查看效果。
+
+### 更改主机名
+
+阿里云默认主机名为随机生成，为区分需要修改主机名。
+
+#### 方法一
+```shell
+hostnamectl set-hostname 新主机名
+```
+
+#### 方法二
+```shell
+vim /etc/hosts
+```
+修改主机名：
+```shell
+vim /etc/sysconfig/network
+```
+修改 HOSTNAME。
