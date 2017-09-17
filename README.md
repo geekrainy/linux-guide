@@ -31,6 +31,8 @@
          * [下载工具](#下载工具)
          * [系统管理](#系统管理)
      * [Windows 兼容](#windows-兼容)
+         * [虚拟机 Tips](#虚拟机-Tips)
+            * [VMWare 克隆虚拟机后克隆机无法连接网络](#VMWare-克隆虚拟机后克隆机无法连接网络)
      * [Tips](#tips)
          * [Linux Mint 安装 git-lfs](#linux-mint-安装-git-lfs)
          * [普通用户无法使用-sudo](#普通用户无法使用-sudo)
@@ -551,6 +553,18 @@ Linux 平台下的应用虽然数量多，但质量也参差不齐。许多应�
 3. 虚拟机方案及优化
 
    （待编辑）
+
+### 虚拟机 Tips
+
+#### VMWare 克隆虚拟机后克隆机无法连接网络
+
+编辑 eth0 的配置文件：
+
+```shell
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+```
+删除 `HWADDR` 和 `UUID` 的行，更改相应的虚拟机 ip，防止冲突。
+有必要再清空文件 `/etc/udev/rules.d/70-persistent-net.rules`.
 
 ## Tips
 
