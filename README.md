@@ -17,6 +17,8 @@
          * [输入法](#输入法)
             * [输入法词库](#输入法词库)
          * [Java 开发环境配置](#java-开发环境配置)
+         * [NFS 附件共享](#nfs-附件共享)
+         * [Unison 文件同步](#unison-文件同步)
      * [应用软件](#应用软件)
          * [浏览器](#浏览器)
          * [Chrome Apps](#chrome-apps)
@@ -266,6 +268,223 @@ sudo apt-get install oracle-java8-installer # JDK 8
 update-alternatives --config java
 update-alternatives --config javac
 ```
+
+### NFS 附件共享
+
+#### 安装
+客户端和服务端分别安装相关软件
+```shell
+yum -y install rpcbind nfs
+chkconfig rpcbind on # 开机启动 rpcbind 服务
+chkconfig nfs on # 开机启动 nfs 服务
+```
+启动相关服务：
+```shell
+service rpcbind start
+service nfs start
+```
+> 以下示例中，分别使用两台本地虚拟机测试，服务端 ip:192.168.221.100，客户端 ip:192.168.221.101
+
+#### 服务端配置
+编辑配置文件 `/etc/exports`
+添加
+`/home/uploads 192.168.221.101(rw,all_squash,anonuid=0,anongid=0)`
+id 为文件夹所属的 uid 和 gid.
+查看该 uid 和 gid:
+```shell
+ls -nd /home/uploads
+```
+> 在 NFS 服务端，若该用户不存在，则会显示相应的 uid 和 gid 而非用户名和组名，需要在服务端创建 uid 和 gid 对应的用户名和组名，即可正确显示。
+
+配置说明：
+```
+192.168.221.101 客户端 ip
+rw 读写 ro 只读
+all_squash 无论客户端以何用户连接服务端，对服务端而言均为匿名用户
+anonuid 匿名用户的 uid
+anongid 匿名用户的 gid
+```
+> uid 和 gid 最好为客户端和服务端均存在的 uid 和 gid 值
+
+#### 配置生效
+执行：
+```shell
+service rpcbind restart
+service nfs restart
+# service nfs reload   调整 /etc/exports 配置文件后进行服务重载
+```
+
+##### 查看
+服务端使用 showmount 命令查看 nfs 的共享状态
+```shell
+showmount -e # 默认查看自己的状态，前提是要能解析自己
+showmount -a # 显示已经与客户端连接的目录信息
+```
+客户端查看
+```shell
+showmount -e 192.168.221.100
+```
+成功则显示目录，失败则会报错
+
+##### 错误解决
+1.  执行客户端查看命令后报错
+    > `clnt_create: RPC: Port mapper failure - Unable to receive: errno 113 (No route to host)`
+    > 在服务端防火墙配置添加端口规则：
+
+    ```shell
+    -A INPUT -m state --state NEW -m tcp -p tcp --dport 111 -j ACCEPT
+    -A INPUT -m state --state NEW -m udp -p udp --dport 111 -j ACCEPT
+    -A INPUT -m state --state NEW -m tcp -p tcp --dport 875 -j ACCEPT
+    -A INPUT -m state --state NEW -m udp -p udp --dport 875 -j ACCEPT
+    -A INPUT -m state --state NEW -m tcp -p tcp --dport 2049 -j ACCEPT
+    -A INPUT -m state --state NEW -m udp -p udp --dport 2049 -j ACCEPT
+    ```
+2.  执行上述操作后依然报错
+    > `rpc mount export: RPC: Unable to receive; errno = No route to hostrpc mount export: RPC: Unable to receive; errno = No route to host`
+
+    在客户端上执行 `rpcinfo  -p  192.168.221.100`
+    查看列出的所有端口。
+
+    在服务端上，将列出的所有端口在防火墙中配置通过：
+
+    ```shell
+    -A INPUT -m state --state NEW -m tcp -p tcp --dport 111 -j ACCEPT
+    -A INPUT -m state --state NEW -m udp -p udp --dport 111 -j ACCEPT
+    -A INPUT -m state --state NEW -m tcp -p tcp --dport 875 -j ACCEPT
+    -A INPUT -m state --state NEW -m udp -p udp --dport 875 -j ACCEPT
+    -A INPUT -m state --state NEW -m tcp -p tcp --dport 2049 -j ACCEPT
+    -A INPUT -m state --state NEW -m udp -p udp --dport 2049 -j ACCEPT
+    -A INPUT -m state --state NEW -m tcp -p tcp --dport 43888 -j ACCEPT
+    -A INPUT -m state --state NEW -m udp -p udp --dport 39912 -j ACCEPT
+    -A INPUT -m state --state NEW -m tcp -p tcp --dport 47611 -j ACCEPT
+    -A INPUT -m state --state NEW -m udp -p udp --dport 10235 -j ACCEPT
+    -A INPUT -m state --state NEW -m tcp -p tcp --dport 64815 -j ACCEPT
+    -A INPUT -m state --state NEW -m udp -p udp --dport 54924 -j ACCEPT
+    -A INPUT -m state --state NEW -m tcp -p tcp --dport 31590 -j ACCEPT
+    -A INPUT -m state --state NEW -m udp -p udp --dport 62105 -j ACCEPT
+    ```
+    执行成功。
+3.  若挂载目录为 `/root/*` 类似目录，则会报错：
+    > `mount.nfs: access denied by server while mounting 192.168.221.100:/root/uploads/`
+
+    原因是由于 `/root/` 目录权限问题，更改权限为 `755` 可解决，或者挂载非 `/root/` 目录。
+
+#### 客户端配置
+重启服务：
+```shell
+service rpcbind restart
+service nfs restart
+```
+查看可用挂载
+```shell
+showmount -e 192.168.221.100
+```
+出错参见上述出错解决方案
+#### 设置自动挂载
+创建本地挂载目录，例如和服务器相同，使用 `/home/uploads` 目录。
+编辑客户端 `/etc/fstab` 文件，追加一行
+```
+192.168.221.100:/home/uploads/ /home/uploads/ nfs defaults 0 0
+```
+挂载测试
+```shell
+mount -a
+```
+查看挂载
+```shell
+nfsstat -m
+df -h
+```
+#### 卸载
+```shell
+umount -l /home/uploads
+```
+#### 测试
+在服务端创建文件，看客户端是否共享，反之亦可。
+
+### Unison 文件同步
+
+#### 配置 SSH 免密登陆
+
+同步文件的服务器之间要求配置免密登陆，参见 [配置密钥登陆](#配置密钥登陆)
+
+#### 安装 Unison
+
+在两台服务器同时安装 Unison.
+
+官方仓库下载 https://github.com/bcpierce00/unison/releases 或直接下载编译好的 rpm 包。
+[ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/unison-2.40.63-1.el6.rf.x86_64.rpm](ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/unison-2.40.63-1.el6.rf.x86_64.rpm)
+
+安装：
+```shell
+rpm -ivh unison-2.40.63-1.el6.rf.x86_64.rpm
+```
+
+新建用户目录下 `.unison` 中的配置文件。
+例：新建一个 `test.prf` 配置文件
+
+```shell
+# Unison preferences
+# 全自动模式，接受缺省动作，并执行
+batch = true
+# 根据创建时间来比较，而非内容，建议开启
+fastcheck = true
+# 保持同步文件的文件组信息
+group = true
+# 忽略文件
+ignore = Path a/*
+log = true
+# 日志文件路径，需要先创建
+logfile = /root/unison/logs/webapp.log
+# 同步时最大线程数
+maxthreads = 300
+# 保持同步过来的文件所有者
+owner = true
+# 保持读写权限
+perms = -1
+# 间隔 60 秒开始一次新的同步检查
+repeat = 60
+# 失败重试次数
+retry = 3
+# 本地同步目录
+root = /root/100
+# 远程同步目录
+root = ssh://root@192.168.221.100//root/101
+# 第一次同步需要开启追踪所有文件，之后关闭来实现差异性同步，该配置同本地 root 配置
+force = /root/100
+# 激活 rsync 传输模式
+rsync = true
+# 静默模式
+silent = true
+# 同步修改时间
+times = true
+# 不变目录，扫描时可忽略
+xferbycopying = true
+```
+
+#### 配置脚本
+新建或编辑 `../unison/scripts/test.sh`.
+检测 unison 状态
+```shell
+#!/bin/bash
+result=`ps -ef | grep "/usr/bin/unison test" | grep -v grep`;
+if [ -z "$result" ];then
+/usr/bin/unison test;
+fi
+```
+配置脚本定时启动
+```shell
+crontab -e
+
+sh ../unison/scripts/test.sh >/dev/null 2>&1
+```
+#### 查看日志
+查看配置参数中指定的日志文件。
+
+#### 重新同步
+1.  注释配置文件中的 force 参数
+2.  运行 `unison test` 进行同步
+3.  注释配置文件中的 force 参数
 
 ## 应用软件
 
