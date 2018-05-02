@@ -616,7 +616,13 @@ sudo apt-get install typora
    sudo usermod -a -G wireshark rainy
    ```
 
-   对于无 wireshark 用户组的，依次执行如下指令：
+   若打开提示无权限，首先给普通用户抓包权限：
+
+   ```shell
+   setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' /usr/bin/dumpcap
+   ```
+
+   然后进行权限控制，只有特定组，即 wireshark 用户组的用户才可以抓包：
 
    ```shell
    chown root /usr/bin/dumpcap
