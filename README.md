@@ -616,6 +616,19 @@ sudo apt-get install typora
    sudo usermod -a -G wireshark rainy
    ```
 
+   对于无 wireshark 用户组的，依次执行如下指令：
+
+   ```shell
+   chown root /usr/bin/dumpcap
+   chmod u+s /usr/bin/dumpcap
+   groupadd wireshark
+   usermod -a -G wireshark username
+   chgrp wireshark /usr/bin/dumpcap
+   chmod o-rx /usr/bin/dumpcap
+   ```
+
+   [参考文档](https://wiki.wireshark.org/CaptureSetup/CapturePrivileges#Other_Linux_based_systems_or_other_installation_methods)
+
 7. [Code::Blocks](http://www.codeblocks.org/)
 
    Daily Builds:
