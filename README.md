@@ -60,6 +60,24 @@
 
 ## 基本配置
 
+### 解决 shell 弹出报错
+
+在 shell 中使用 `zenity` 弹出框，报错：
+
+```
+WARNING **: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+```
+
+在 debian 系可以安装 `at-spi2-core` 包解决。
+
+可能还会有的报错：
+
+```
+Gtk-Message: GtkDialog mapped without a transient parent. This is discouraged.
+```
+
+该报错可以安全地忽略。
+
 ### 联网
 
 1. 锐捷官方客户端
