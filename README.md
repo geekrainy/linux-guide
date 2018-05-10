@@ -841,6 +841,37 @@ sudo apt-get update
 sudo apt-get install git-lfs
 ```
 
+*Deepin 操作系统安装注意*
+
+上述安装脚本无法识别 Deepin 操作系统版本，由于 Deepin 最新版基于 debain jessie 开发，因而可以手动添加 debian jessie 源来安装。
+
+```shell
+sudo vim /etc/apt/source.list.d/github_git-lfs.list
+```
+
+内容如下：
+
+```
+deb https://packagecloud.io/github/git-lfs/debian/ jessie main
+deb-src https://packagecloud.io/github/git-lfs/debian/ jessie main
+```
+
+安装 apt-key:
+
+```shell
+sudo apt-get install curl gnupg
+curl -L https://packagecloud.io/github/git-lfs/gpgkey | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install debian-archive-keyring
+sudo apt-get install apt-transport-https -y
+```
+
+随后即可正常安装：
+
+```shell
+sudo apt-get install git-lfs
+```
+
 > 由于 github 的 lfs 文件存储在 Amazon S3 服务器，所以在传送大文件时可能因为网络原因造成失败。所以可以通过配置 `hosts` 文件来使其走香港节点，来提高速度。
 >
 > 在 `hosts` 文件中添加：
