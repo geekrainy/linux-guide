@@ -705,9 +705,13 @@ sudo apt-get install typora
 
    然后配置文件 `/etc/proxychains.conf`。
 
-3. [Lantern](https://getlantern.org/)
+3. [Proxychains-ng](https://github.com/rofl0r/proxychains-ng)
 
-4. polipo
+   Proxychains-ng 是 Proxychains 的增强版本，
+
+4. [Lantern](https://getlantern.org/)
+
+5. polipo(已停止维护)
 
    polipo 是一个轻量级的缓存web代理程序，将 socks 代理转换为 http 代理。
 
